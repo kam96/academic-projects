@@ -1,5 +1,4 @@
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.util.BitSet;
 
 public class File_System
@@ -11,8 +10,24 @@ public class File_System
     public File_System()
     {
         this.disk = new IO_System();        // primary ldisk
-        this.bitmap = new BitSet(64); // ldisk[0]
-        this.mask = new BitSet(64);
+        this.bitmap = new BitSet(64); // ldisk[0] bitmap
+        this.mask = new BitSet(64);   // mask for bitmap
+    }
+
+    private boolean _restore(File file)
+    {
+        try
+        {
+            FileReader reader = new FileReader(file);
+            // CODE HERE <-----
+            reader.close();
+        }
+        catch (IOException e)
+        {
+            return false;
+        }
+
+        return true;
     }
 
     public void init(String filename)
@@ -21,8 +36,12 @@ public class File_System
 
         if (d_file.isFile()) // Checks if file exists & isn't dir and restores disk
         {
-            // *************************
-            System.out.println("disk restored");
+            boolean check =_restore(d_file);
+
+            if (check)
+                System.out.println("disk restored");
+            else
+                System.out.println("DISK ERROR");
         }
 
         else // Initializes new disk
@@ -34,24 +53,25 @@ public class File_System
         }
     }
 
-    public void save(String filename) throws IOException
+    public void save(String filename)
     {
-        File d_file = new File(System.getProperty("user.dir") + "\\" + filename);
-
-        if (!d_file.exists())
+        try
         {
-            d_file.createNewFile();
+            PrintWriter out = new PrintWriter(filename);
+
+            BitSet liner;
+            for (int i = 0; i < 64; i++)
+            {
+                liner = BitSet.valueOf(disk.read_block(i));
+                out.println(liner.toString());
+            }
+
+            out.close();
+            System.out.println("disk saved");
         }
-
-        disk.save_disk(d_file);
-        System.out.println("disk saved");
+        catch (FileNotFoundException e)
+        {
+            System.out.println("SAVE ERROR");
+        }
     }
-
-
-
-    /*
-        TODO:
-        - init needs disk restore and disk init functions
-
-     */
 }

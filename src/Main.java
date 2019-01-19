@@ -1,3 +1,4 @@
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Scanner;
 
@@ -45,14 +46,7 @@ public class Main
                     sys.init(strarray[1]); // Add length checking here !!!
                     break;
                 case "sv": // Save ldisk to specified file
-                    try
-                    {
-                        sys.save(strarray[1]);
-                    }
-                    catch (IOException e)
-                    {
-                        System.out.println("Saving error");
-                    }
+                    sys.save(strarray[1]); // Add length checking here !!!
                     break;
                 case "ex": // Exit program
                     System.out.println("Now exiting program...");
