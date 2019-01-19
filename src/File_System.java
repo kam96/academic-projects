@@ -18,8 +18,15 @@ public class File_System
     {
         try
         {
-            FileReader reader = new FileReader(file);
-            // CODE HERE <-----
+            BufferedReader reader = new BufferedReader(new FileReader(file));
+            String line;
+
+            while((line = reader.readLine()) != null)
+            {
+                System.out.println(line);
+                // DO CODE HERE !!!!
+            }
+
             reader.close();
         }
         catch (IOException e)
@@ -28,6 +35,16 @@ public class File_System
         }
 
         return true;
+    }
+
+    public void read(int index, int count)
+    {
+        
+    }
+
+    public void write(int index, byte[] chars, int count)
+    {
+
     }
 
     public void init(String filename)
