@@ -1,5 +1,6 @@
 import java.io.*;
 import java.util.BitSet;
+import java.util.Arrays;
 
 public class File_System
 {
@@ -14,22 +15,42 @@ public class File_System
         this.mask = new BitSet(64);   // mask for bitmap
     }
 
-    private boolean _restore(File file)
+    private boolean _restore(File file) // Optimize this helper function
     {
         try
         {
             BufferedReader reader = new BufferedReader(new FileReader(file));
+            int[] intArray;
             String line;
 
-            while((line = reader.readLine()) != null)
+            for (int i = 0; (line = reader.readLine()) != null; i++)
             {
-                System.out.println(line);
-                // DO CODE HERE !!!!
+                line = line.replace("{", "")
+                        .replace("}", "");
+
+                if (!line.equals(""))
+                {
+                    intArray = Arrays.stream(line.split(", "))
+                            .mapToInt(Integer::parseInt)
+                            .toArray();
+
+                    for (int j = 0; i < intArray.length; i++)
+                        this.bitmap.set(intArray[j]);
+                    // DONT USE BITMAP HERE, Create a new Bitset
+                    // May be cause for interference of new file creation
+                    this.disk.write_block(i, this.bitmap.toByteArray());
+                }
+                else
+                    continue;
             }
 
             reader.close();
         }
         catch (IOException e)
+        {
+            return false;
+        }
+        catch (NumberFormatException e)
         {
             return false;
         }
@@ -39,7 +60,7 @@ public class File_System
 
     public void read(int index, int count)
     {
-        
+
     }
 
     public void write(int index, byte[] chars, int count)
@@ -65,12 +86,12 @@ public class File_System
         {
             this.bitmap.set(0,7);
             this.disk.write_block(0, this.bitmap.toByteArray());
-
+            // Do some other stuff here to init the rest of the disk
             System.out.println("disk initialized");
         }
     }
 
-    public void save(String filename)
+    public void save(String filename) // Add functionality to close all files
     {
         try
         {
