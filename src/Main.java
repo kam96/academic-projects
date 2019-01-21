@@ -1,5 +1,3 @@
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.Scanner;
 
 public class Main
@@ -7,7 +5,6 @@ public class Main
     public static void main(String[] args)
     {
         File_System sys = new File_System();
-
         System.out.println("File System Shell");
         Scanner keyboard = new Scanner(System.in);
         String[] strarray;
@@ -31,7 +28,9 @@ public class Main
                     System.out.println("cl is working");
                     break;
                 case "rd": // Reads given number of characters from spec. file
-                    System.out.println("rd is working");
+                    sys.read(Integer.parseInt(strarray[1]),
+                            Integer.parseInt(strarray[2]));
+                            // Need length checking
                     break;
                 case "wr": // Sequentially writes number of spec. char to spec. file
                     System.out.println("wr is working");
@@ -54,24 +53,8 @@ public class Main
                 default:
                     System.out.println("Unrecognized input...");
                     break;
-
             }
 
         }
-
-        /* Testing write_block/read_block functionality
-        IO_System a = new IO_System();
-        byte[] p = new byte[] {64, 81, 11};
-        byte[] q = new byte[] {};
-
-        for (int i = 0; i < 64; i++)
-        {
-            a.write_block(i,p);
-        }
-
-        q = a.read_block(0, q);
-
-        System.out.println(Arrays.toString(q));
-        */
     }
 }

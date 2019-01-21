@@ -6,13 +6,11 @@ public class File_System
 {
     private IO_System disk;
     private BitSet bitmap;
-    private BitSet mask;
 
     public File_System()
     {
         this.disk = new IO_System();        // primary ldisk
         this.bitmap = new BitSet(64); // ldisk[0] bitmap
-        this.mask = new BitSet(64);   // mask for bitmap
     }
 
     private boolean _restore(File file) // Optimize this helper function
@@ -20,11 +18,13 @@ public class File_System
         try
         {
             BufferedReader reader = new BufferedReader(new FileReader(file));
+            BitSet bitArray = new BitSet(64);
             int[] intArray;
             String line;
 
             for (int i = 0; (line = reader.readLine()) != null; i++)
             {
+                bitArray.clear();
                 line = line.replace("{", "")
                         .replace("}", "");
 
@@ -34,11 +34,10 @@ public class File_System
                             .mapToInt(Integer::parseInt)
                             .toArray();
 
-                    for (int j = 0; i < intArray.length; i++)
-                        this.bitmap.set(intArray[j]);
-                    // DONT USE BITMAP HERE, Create a new Bitset
-                    // May be cause for interference of new file creation
-                    this.disk.write_block(i, this.bitmap.toByteArray());
+                    for (int j = 0; j < intArray.length; j++)
+                        bitArray.set(intArray[j]);
+
+                    this.disk.write_block(i, bitArray.toByteArray());
                 }
                 else
                     continue;
@@ -50,22 +49,49 @@ public class File_System
         {
             return false;
         }
-        catch (NumberFormatException e)
-        {
-            return false;
-        }
 
         return true;
     }
 
-    public void read(int index, int count)
+    public void create(String filename)
     {
 
     }
 
-    public void write(int index, byte[] chars, int count)
+    public void destroy(String filename)
     {
 
+    }
+
+    public int open(String filename)
+    {
+        return 0; //temp handler
+    }
+
+    public void close(int index)
+    {
+
+    }
+
+    public void read(int index, int count) // return bytes read
+    {
+        BitSet block = new BitSet(64);
+
+    }
+
+    public int write(int index, byte[] chars, int count) // return #bytes written
+    {
+        return 0; //temp
+    }
+
+    public void lseek(int index, int pos)
+    {
+        // should use some sort of "this" variable
+    }
+
+    public String[] directory()
+    {
+        return new String[]{}; // tempo placeholder
     }
 
     public void init(String filename)
@@ -79,7 +105,7 @@ public class File_System
             if (check)
                 System.out.println("disk restored");
             else
-                System.out.println("DISK ERROR");
+                System.out.println("error");
         }
 
         else // Initializes new disk
@@ -109,7 +135,7 @@ public class File_System
         }
         catch (FileNotFoundException e)
         {
-            System.out.println("SAVE ERROR");
+            System.out.println("error");
         }
     }
 }
