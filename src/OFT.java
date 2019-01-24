@@ -10,6 +10,7 @@ public class OFT // Open file table
     {
         this.table = new OFTEntry[size];
 
+        this.table[0] = new OFTEntry();
         this.table[0].setBuffer(directory.getBuffer());
         this.table[0].setIndex(directory.getIndex());
         this.table[0].setPosition(directory.getPosition());
@@ -31,6 +32,7 @@ public class OFT // Open file table
             return;
         }
 
+        this.table[index] = new OFTEntry();
         this.table[index].setBuffer(entry.getBuffer());
         this.table[index].setPosition(entry.getPosition());
         this.table[index].setIndex(entry.getIndex());

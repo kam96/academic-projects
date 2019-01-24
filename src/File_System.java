@@ -7,6 +7,7 @@ public class File_System
     private IO_System disk;
     private BitSet bitmap;
     private boolean init;
+    private OFT oftable;
 
     public File_System()
     {
@@ -117,13 +118,11 @@ public class File_System
         {
             this.bitmap.set(0,7);
             this.disk.write_block(0, this.bitmap.toByteArray());
-            // Do some other stuff here to init the rest of the disk
-
-            //Directory descriptor initialize
-            //Directory OFT
-            //
             System.out.println("disk initialized");
         }
+
+        OFTEntry directory = new OFTEntry(BitSet.valueOf(this.disk.read_block(1)), 0, 1);
+        this.oftable = new OFT(directory);
     }
 
     public void save(String filename) // Add functionality to close all files
