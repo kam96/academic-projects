@@ -6,11 +6,13 @@ public class File_System
 {
     private IO_System disk;
     private BitSet bitmap;
+    private boolean init;
 
     public File_System()
     {
         this.disk = new IO_System();        // primary ldisk
         this.bitmap = new BitSet(64); // ldisk[0] bitmap
+        this.init = false;                  // Check if ldisk initialized
     }
 
     private boolean _restore(File file) // Optimize this helper function
@@ -103,7 +105,10 @@ public class File_System
             boolean check =_restore(d_file);
 
             if (check)
+            {
+                this.init = true;
                 System.out.println("disk restored");
+            }
             else
                 System.out.println("error");
         }
@@ -113,6 +118,10 @@ public class File_System
             this.bitmap.set(0,7);
             this.disk.write_block(0, this.bitmap.toByteArray());
             // Do some other stuff here to init the rest of the disk
+
+            //Directory descriptor initialize
+            //Directory OFT
+            //
             System.out.println("disk initialized");
         }
     }
