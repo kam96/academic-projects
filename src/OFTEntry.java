@@ -6,6 +6,11 @@ public class OFTEntry
     private int position;
     private int index;
 
+    public OFTEntry()
+    {
+        this.index = -1;
+    }
+
     public OFTEntry(BitSet buf, int pos, int ind)
     {
         this.rwbuffer = buf;
