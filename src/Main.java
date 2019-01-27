@@ -16,7 +16,7 @@ public class Main
             switch(strarray[0])
             {
                 case "cr": // Create new file with specified name
-                    System.out.println("cr is working");
+                    sys.create(strarray[1]); // Add length checking !!!
                     break;
                 case "de": // Destroy file with given name
                     System.out.println("de is working");

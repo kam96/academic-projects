@@ -32,6 +32,7 @@ public class OFT // Open file table
             return;
         }
 
+        // Can edit this to produce an object in 1 line
         this.table[index] = new OFTEntry();
         this.table[index].setBuffer(entry.getBuffer());
         this.table[index].setPosition(entry.getPosition());
