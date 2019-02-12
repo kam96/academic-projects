@@ -36,10 +36,12 @@ public class Main
                     System.out.println("wr is working");
                     break;
                 case "sk": // Seek specified position in spec. file
-                    System.out.println("sk is working");
+                    sys.lseek(Integer.parseInt(strarray[1]),
+                            Integer.parseInt(strarray[2]));
+                            // Need length checking
                     break;
                 case "dr": // List the names of all files
-                    System.out.println("dr is working");
+                    sys.directory();
                     break;
                 case "in": // Create disk, initialize it, and open directory
                     sys.init(strarray[1]); // Add length checking here !!!

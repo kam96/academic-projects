@@ -63,7 +63,8 @@ public class File_System
 
         // DIRECTORY DESCRIPTOR AND SUBSEQUENT 3 DESCRIPTORS
         dirmem.pack(0, 0);
-        for (int i = 4; i < memory.size; i+=4)
+        dirmem.pack(7, 4);
+        for (int i = 8; i < memory.size; i+=4)
             dirmem.pack(-1, i);
         disk.write_block(1, dirmem.mem);
 
@@ -82,7 +83,7 @@ public class File_System
         {
             for (byte b : memory.mem = disk.read_block(i)) {}
 
-            for (int j = 0; j < memory.size; j+=4)
+            for (int j = 0; j < memory.size; j+=16)
             {
                 if (memory.unpack(j) == -1)
                 {
@@ -107,6 +108,7 @@ public class File_System
         }
 
         int index = this.bitmap.nextClearBit(8);
+        this.bitmap.set(index);
         int[] desc = _find_descriptor();
 
         if (desc[0] == -1 || desc[1] == -1)
@@ -114,8 +116,14 @@ public class File_System
             System.out.println("error");
             return;
         }
+        System.out.println(desc[0]);
+        System.out.println(desc[1]);
 
-
+        // Need to add to directory
+        for (byte b : filespace.mem = disk.read_block(desc[0])) {}
+        filespace.pack(0, desc[1]);
+        filespace.pack(index, desc[1]+4);
+        disk.write_block(desc[0], filespace.mem);
     }
 
     public void destroy(String filename)
@@ -133,25 +141,67 @@ public class File_System
 
     }
 
-    public void read(int index, int count) // return bytes read
+    // Add error checking for unopened/uninit OFT entries.
+    public int read(int index, int count) // return bytes read
     {
-        BitSet block = new BitSet(64);
+        int pos = this.oftable.get_pos(index);
+        PackableMemory memory = new PackableMemory(64);
 
+        for (byte b : memory.mem = this.oftable.get_buf(index).toByteArray()) {}
+
+        if (BitSet.valueOf(memory.mem).isEmpty())
+            System.out.println("Read empty");
+
+        return -1; // placeholder
     }
 
+    // Add error checking for unopened/uninit OFT entries.
     public int write(int index, byte[] chars, int count) // return #bytes written
     {
-        return 0; //temp
+        int pos = this.oftable.get_pos(index);
+        PackableMemory memory = new PackableMemory(64);
+
+        for (byte b : memory.mem = chars) {}
+
+
+        return 0;
     }
 
-    public void lseek(int index, int pos)
+    public void lseek(int index, int pos) // pos cannot be >= 192 (max 3 blocks per file)
     {
-        // should use some sort of "this" variable
+        // Use descriptors to figure out how many files/indexes there are
+
+        if (pos >= 64) // if new pos not in current block
+        {
+            pos = pos % 64; // Position in new file
+
+        }
+
+        this.oftable.set_pos(index, pos);
+
+        System.out.println("position is " + pos);
     }
 
-    public String[] directory()
+    public void directory()
     {
-        return new String[]{}; // tempo placeholder
+        // Make sure it reads from beginning of directory thought
+
+        byte[] dir = this.oftable.get_buf(0).toByteArray();
+        PackableMemory memory = new PackableMemory(64);
+
+        if (BitSet.valueOf(dir).isEmpty())
+        {
+            //System.out.println("");
+            return;
+        }
+
+        for (byte b : memory.mem = dir) {}
+
+        // IN PROGRESS PAST HERE
+        for (int i = 0 ; i < memory.size; i+=4)
+        {
+            System.out.println(memory.unpack(i));
+        }
     }
 
     public void init(String filename) // if no filename, new file -> fix this error
@@ -181,19 +231,14 @@ public class File_System
 
         else // Initializes new disk
         {
-            this.bitmap.set(0,8); // first for directory / 0-7 are for bitmap & descriptors
+            this.bitmap.set(0,8); // 7 for directory / 0-6 are for bitmap & descriptors
             this.disk.write_block(0, this.bitmap.toByteArray());
             _init_descriptor();
             System.out.println("disk initialized");
         }
 
-        /*PackableMemory memtest = new PackableMemory(64);
-        for (int i = 2; i < 7; i++)
-            for (byte b : memtest.mem = disk.read_block(i)) {}
-        System.out.println(memtest.unpack(0));*/
-
         // This implementation automatically reserves the first block of ldisk for the first dir file.
-        OFTEntry directory = new OFTEntry(BitSet.valueOf(this.disk.read_block(1)), 0, 7);
+        OFTEntry directory = new OFTEntry(BitSet.valueOf(this.disk.read_block(7)), 0, 7);
         this.oftable = new OFT(directory);
     }
 
