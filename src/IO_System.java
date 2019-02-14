@@ -11,9 +11,7 @@ public class IO_System
         {
             this.ldisk[i] = new byte[B];
             for (int j = 0; j < B; j++)
-            {
                 this.ldisk[i][j] = 0;
-            }
         }
     }
 

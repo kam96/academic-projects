@@ -15,6 +15,7 @@ public class OFT // Open file table
         this.table[0].setBuffer(directory.getBuffer());
         this.table[0].setIndex(directory.getIndex());
         this.table[0].setPosition(directory.getPosition());
+        this.table[0].setInc(4);
     }
 
     public void addEntry(OFTEntry entry)
@@ -38,6 +39,7 @@ public class OFT // Open file table
         this.table[index].setBuffer(entry.getBuffer());
         this.table[index].setPosition(entry.getPosition());
         this.table[index].setIndex(entry.getIndex());
+        this.table[index].setInc(4);
 
         this.filecount++;
     }
@@ -47,6 +49,7 @@ public class OFT // Open file table
         this.table[oft_index].setBuffer(new BitSet());
         this.table[oft_index].setPosition(0);
         this.table[oft_index].setIndex(-1);
+        this.table[oft_index].setInc(4);
 
         this.filecount--;
     }
@@ -74,5 +77,15 @@ public class OFT // Open file table
     public int get_index(int index)
     {
         return this.table[index].getIndex();
+    }
+
+    public int get_inc(int index)
+    {
+        return this.table[index].getInc();
+    }
+
+    public void set_inc(int index, int inc)
+    {
+        this.table[index].setInc(inc);
     }
 }

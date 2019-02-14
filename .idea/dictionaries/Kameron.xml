@@ -2,6 +2,7 @@
   <dictionary name="Kameron">
     <words>
       <w>ldisk</w>
+      <w>lseek</w>
       <w>strarray</w>
     </words>
   </dictionary>

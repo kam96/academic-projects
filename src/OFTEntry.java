@@ -5,6 +5,7 @@ public class OFTEntry
     private BitSet rwbuffer;
     private int position;
     private int index;
+    private int currInc;
 
     public OFTEntry()
     {
@@ -13,9 +14,10 @@ public class OFTEntry
 
     public OFTEntry(BitSet buf, int pos, int ind)
     {
-        this.rwbuffer = buf;
-        this.position = pos;
-        this.index = ind;
+        this.rwbuffer = buf; // current read/write buffer
+        this.position = pos; // position pointed to in file
+        this.index = ind;    // file descriptor index
+        this.currInc = 4;
     }
 
     public void setBuffer(BitSet buf)
@@ -47,4 +49,8 @@ public class OFTEntry
     {
         return this.index;
     }
+
+    public int getInc() {return this.currInc;}
+
+    public void setInc(int inc) {this.currInc = inc;}
 }

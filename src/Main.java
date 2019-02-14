@@ -19,13 +19,13 @@ public class Main
                     sys.create(strarray[1]); // Add length checking !!!
                     break;
                 case "de": // Destroy file with given name
-                    System.out.println("de is working");
+                    sys.destroy(strarray[1]);
                     break;
                 case "op": // Opens specified file
-                    System.out.println("op is working");
+                    sys.open(strarray[1]);
                     break;
                 case "cl": // Closes specified file
-                    System.out.println("cl is working");
+                    sys.close(Integer.parseInt(strarray[1]));
                     break;
                 case "rd": // Reads given number of characters from spec. file
                     sys.read(Integer.parseInt(strarray[1]),
@@ -33,12 +33,18 @@ public class Main
                             // Need length checking
                     break;
                 case "wr": // Sequentially writes number of spec. char to spec. file
-                    System.out.println("wr is working");
+                    int num = sys.write(Integer.parseInt(strarray[1]),
+                            strarray[2].charAt(0),
+                            Integer.parseInt(strarray[3]));
+
+                    System.out.println(num + " bytes written");
+                        // Need length checking
                     break;
                 case "sk": // Seek specified position in spec. file
-                    sys.lseek(Integer.parseInt(strarray[1]),
+                    int pos = sys.lseek(Integer.parseInt(strarray[1]),
                             Integer.parseInt(strarray[2]));
                             // Need length checking
+                    System.out.println("position is " + pos);
                     break;
                 case "dr": // List the names of all files
                     sys.directory();
@@ -53,7 +59,7 @@ public class Main
                     System.out.println("Now exiting program...");
                     return;
                 default:
-                    System.out.println("Unrecognized input...");
+                    System.out.println("");
                     break;
             }
 
