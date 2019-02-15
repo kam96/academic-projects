@@ -142,7 +142,51 @@ public class File_System
 
     public int open(String filename)
     {
-        return 0; //temp handler
+        // If the table is full, do not open anymore files
+        if (this.oftable.getFilecount() == 3)
+            return -1;
+
+        int old_pos = this.oftable.get_pos(0);
+        int index = -1;
+
+        // Search directory to find index of file descriptor
+        lseek(0,0);
+        String directory = read(0,old_pos).substring(1); // remove extra char
+        int dex = directory.indexOf(filename);
+        if (dex < 0)
+            return -1;
+        index = directory.toCharArray()[dex+filename.length()] -'0';
+
+        // allocate free OFT entry & fill in current position & fdi
+        int oft_index = -1;
+        if (index != -1)
+            oft_index = this.oftable.addEntry(new OFTEntry(new BitSet(512), 0, index)); // add index
+        else
+            return -1;
+
+        // read block 0 of file into the r/w buffer
+        PackableMemory memory = new PackableMemory(64);
+        int k = 0; // at k = 1 it overwrote directory
+        int loc = 0;
+
+        for (int i = 1; i < 7; i++)
+        {
+            for (byte b : memory.mem = disk.read_block(i));
+
+            for (int j = 0; j < memory.size; j+=16)
+            {
+                if (this.oftable.get_index(oft_index) == k)
+                {
+                    loc = memory.unpack(j+4);
+                    this.oftable.set_buf(BitSet.valueOf(this.disk.read_block(loc)), oft_index);
+                    return j;
+                }
+                k++;
+            }
+        }
+
+        // return error.
+        return -1;
     }
 
     public void close(int index) //incomplete
@@ -160,7 +204,7 @@ public class File_System
         System.out.println(index + ". " + "closed");
     }
 
-    public int read(int index, int count) // return bytes read
+    public String read(int index, int count) // return bytes read
     {
         // ISSUE : extra letter at the beginning when printing out files... hmm
         // ISSUE : When rd 0 192 is called 3 different versions of the same thing print
@@ -168,7 +212,6 @@ public class File_System
         // Compute position in r/w buffer
         int pos = this.oftable.get_pos(index);
         String read_bytes = new String();
-        int bytes = 0;
 
         PackableMemory memory = new PackableMemory(64);
         for (int i = 0; i < memory.mem.length; i++)
@@ -183,8 +226,15 @@ public class File_System
         while (count >= 0 && this.oftable.get_pos(index) != 192)
         {
             // 2. end of buffer is reached
-            if (this.oftable.get_pos(index) % 64 == 0)
+            if (this.oftable.get_pos(index) % 64 == 0 && this.oftable.get_pos(index) != 0)
             {
+                // MAYBE USE FILE LENGTH?
+                // write buffer to disk
+                    // using index -> write to current file
+                    // using index -> read next block
+                // read the next block
+                // continue copying
+                System.out.println("YOOHOOOO");
 
             }
 
@@ -193,13 +243,11 @@ public class File_System
             else
                 read_bytes += " ";
             count--;
-            bytes++;
             this.oftable.set_pos(index, pos++);
         }
 
         // return status
-        System.out.println(read_bytes);
-        return bytes-1;
+        return read_bytes;
     }
 
     public int write(int index, char symbol, int count) // return #bytes written
@@ -226,7 +274,7 @@ public class File_System
         while (count >= 0 && this.oftable.get_pos(index) != 192)
         {
             // 2. end of buffer is reached
-            if (this.oftable.get_pos(index) % 64 == 0)
+            if (this.oftable.get_pos(index) % 64 == 0 && this.oftable.get_pos(index) != 0)
             {
 
             }
@@ -311,7 +359,7 @@ public class File_System
         return pos;
     }
 
-    public void directory() // Done but need to ignore numbers
+    public void directory() // What is going on here?
     {
         int old_pos = this.oftable.get_pos(0); // Store old position
         lseek(0,0); // Go to beginning of directory.
@@ -351,7 +399,7 @@ public class File_System
         }
 
         // This implementation automatically reserves the first block of ldisk for the first dir file.
-        OFTEntry directory = new OFTEntry(BitSet.valueOf(this.disk.read_block(7)), 0, 0); // ???
+        OFTEntry directory = new OFTEntry(BitSet.valueOf(this.disk.read_block(7)), 0, 0);
         this.oftable = new OFT(directory);
     }
 

@@ -22,22 +22,34 @@ public class Main
                     sys.destroy(strarray[1]);
                     break;
                 case "op": // Opens specified file
-                    sys.open(strarray[1]);
+                    int status = sys.open(strarray[1]);
+                    if (status == -1)
+                        System.out.println("error");
                     break;
                 case "cl": // Closes specified file
                     sys.close(Integer.parseInt(strarray[1]));
                     break;
                 case "rd": // Reads given number of characters from spec. file
-                    sys.read(Integer.parseInt(strarray[1]),
-                            Integer.parseInt(strarray[2]));
+                    if (Integer.parseInt(strarray[1]) == 0)
+                        System.out.println("error"); // prevent user from access dir
+                    else
+                    {
+                        String str = sys.read(Integer.parseInt(strarray[1]),
+                                Integer.parseInt(strarray[2]));
+                        System.out.println(str);
+                    }
                             // Need length checking
                     break;
                 case "wr": // Sequentially writes number of spec. char to spec. file
-                    int num = sys.write(Integer.parseInt(strarray[1]),
-                            strarray[2].charAt(0),
-                            Integer.parseInt(strarray[3]));
-
-                    System.out.println(num + " bytes written");
+                    if (Integer.parseInt(strarray[1]) == 0)
+                        System.out.println("error"); // prevent user dir access
+                    else
+                    {
+                        int num = sys.write(Integer.parseInt(strarray[1]),
+                                strarray[2].charAt(0),
+                                Integer.parseInt(strarray[3]));
+                        System.out.println(num + " bytes written");
+                    }
                         // Need length checking
                     break;
                 case "sk": // Seek specified position in spec. file
