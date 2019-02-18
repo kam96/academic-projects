@@ -25,9 +25,18 @@ public class Main
                     int status = sys.open(strarray[1]);
                     if (status == -1)
                         System.out.println("error");
+                    else
+                        System.out.println(strarray[1] + " opened " + status);
                     break;
                 case "cl": // Closes specified file
-                    sys.close(Integer.parseInt(strarray[1]));
+                    int index = Integer.parseInt(strarray[1]);
+                    if (index <= 0 || index > 3)
+                        System.out.println("error");
+                    else
+                    {
+                        index = sys.close(Integer.parseInt(strarray[1]));
+                        System.out.println(index + ". closed");
+                    }
                     break;
                 case "rd": // Reads given number of characters from spec. file
                     if (Integer.parseInt(strarray[1]) == 0)
@@ -36,9 +45,8 @@ public class Main
                     {
                         String str = sys.read(Integer.parseInt(strarray[1]),
                                 Integer.parseInt(strarray[2]));
-                        System.out.println(str);
+                        System.out.println(str.substring(1));
                     }
-                            // Need length checking
                     break;
                 case "wr": // Sequentially writes number of spec. char to spec. file
                     if (Integer.parseInt(strarray[1]) == 0)
@@ -50,22 +58,20 @@ public class Main
                                 Integer.parseInt(strarray[3]));
                         System.out.println(num + " bytes written");
                     }
-                        // Need length checking
                     break;
                 case "sk": // Seek specified position in spec. file
                     int pos = sys.lseek(Integer.parseInt(strarray[1]),
                             Integer.parseInt(strarray[2]));
-                            // Need length checking
                     System.out.println("position is " + pos);
                     break;
                 case "dr": // List the names of all files
                     sys.directory();
                     break;
                 case "in": // Create disk, initialize it, and open directory
-                    sys.init(strarray[1]); // Add length checking here !!!
+                    sys.init(strarray[1]);
                     break;
                 case "sv": // Save ldisk to specified file
-                    sys.save(strarray[1]); // Add length checking here !!!
+                    sys.save(strarray[1]);
                     break;
                 case "ex": // Exit program
                     System.out.println("Now exiting program...");

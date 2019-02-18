@@ -111,6 +111,7 @@ public class File_System
 
         int index = this.bitmap.nextClearBit(8);
         this.bitmap.set(index); // should be placed at end to indicate success
+        this.disk.write_block(0, this.bitmap.toByteArray()); // update bitmap
         int[] desc = _find_descriptor();
 
         if (desc[0] == -1 || desc[1] == -1)
@@ -119,10 +120,11 @@ public class File_System
             return;
         }
 
-        for (byte b : filespace.mem = disk.read_block(desc[0])) {}
+        System.out.println(desc[0] + " " + desc[1] + " " + desc[2]);
+        for (byte b : filespace.mem = this.disk.read_block(desc[0])) {}
         filespace.pack(0, desc[1]);             // file size
         filespace.pack(index, desc[1]+4);       // index in ldisk of first file
-        disk.write_block(desc[0], filespace.mem);   // write to descriptor index
+        this.disk.write_block(desc[0], filespace.mem);   // write to descriptor index
 
         // add to directory
         char[] name = filename.toCharArray();
@@ -155,7 +157,7 @@ public class File_System
         int dex = directory.indexOf(filename);
         if (dex < 0)
             return -1;
-        index = directory.toCharArray()[dex+filename.length()] -'0';
+        index = directory.toCharArray()[dex+filename.length()] - '0'; // convert fd index to int
 
         // allocate free OFT entry & fill in current position & fdi
         int oft_index = -1;
@@ -179,29 +181,49 @@ public class File_System
                 {
                     loc = memory.unpack(j+4);
                     this.oftable.set_buf(BitSet.valueOf(this.disk.read_block(loc)), oft_index);
-                    return j;
+                    return oft_index;
+                }
+                k++;
+            }
+        }
+        // return error.
+        return -1;
+    }
+
+    public int close(int index) //incomplete
+    {
+        if (this.oftable.get_index(index) == -1)
+            return -1;
+        // Write buffer to disk
+        PackableMemory memory = new PackableMemory(64);
+        int k = 0;
+        int loc = 0;
+
+        for (int i = 1; i < 7; i++)
+        {
+            for (byte b : memory.mem = disk.read_block(i));
+
+            for (int j = 0; j < memory.size; j+=16)
+            {
+                if (this.oftable.get_index(index) == k)
+                {
+                    loc = memory.unpack(loc+this.oftable.get_inc(index));
+                    System.out.print(loc);
+                    // write buffer to disk
+                    this.disk.write_block(loc, this.oftable.get_buf(index).toByteArray());
+                    // Update file length in descriptor
+                    memory.pack(this.oftable.get_pos(index),j);
+                    this.disk.write_block(i, memory.mem);
+                    // Free OFT entry
+                    this.oftable.deleteEntry(index);
+                    // return status
+                    return index;
                 }
                 k++;
             }
         }
 
-        // return error.
         return -1;
-    }
-
-    public void close(int index) //incomplete
-    {
-        // Write buffer to disk
-        // This probably needs to be fixed to get the right index of the file
-        this.disk.write_block(this.oftable.get_index(index), this.oftable.get_buf(index).toByteArray()); // ???
-
-        // Update file length in descriptor
-
-        // Free OFT entry
-        this.oftable.deleteEntry(index);
-
-        // return status
-        System.out.println(index + ". " + "closed");
     }
 
     public String read(int index, int count) // return bytes read
@@ -234,7 +256,7 @@ public class File_System
                     // using index -> read next block
                 // read the next block
                 // continue copying
-                System.out.println("YOOHOOOO");
+                System.out.println("reached");
 
             }
 
@@ -359,11 +381,14 @@ public class File_System
         return pos;
     }
 
-    public void directory() // What is going on here?
+    public void directory() 
     {
+        // remove anything that is a number
+
         int old_pos = this.oftable.get_pos(0); // Store old position
         lseek(0,0); // Go to beginning of directory.
-        read(0, old_pos); // Read the directory up to its current position.
+        // Read the directory up to its current position.
+        System.out.println(read(0, old_pos).substring(1));
     }
 
     public void init(String filename) // if no filename, new file -> fix this error
@@ -403,8 +428,12 @@ public class File_System
         this.oftable = new OFT(directory);
     }
 
-    public void save(String filename) // Add functionality to close all files
+    public void save(String filename)
     {
+        // Can't seem to load up save properly, may be an issue with other functions?
+        for (int i = 0; i < 4; i++)
+            close(i);
+
         try
         {
             PrintWriter out = new PrintWriter(filename);

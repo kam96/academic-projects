@@ -35,9 +35,7 @@ public class OFT // Open file table
         }
 
         if (index == -1)
-        {
             return -1;
-        }
 
         // Can edit this to produce an object in 1 line
         this.table[index].setBuffer(entry.getBuffer());
