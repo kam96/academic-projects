@@ -1,86 +1,127 @@
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
 import java.util.Scanner;
 
 public class Main
 {
-    public static void main(String[] args)
+    public static void main(String[] args) throws FileNotFoundException
     {
         File_System sys = new File_System();
-        System.out.println("File System Shell");
-        Scanner keyboard = new Scanner(System.in);
+        Scanner input = new Scanner(new File(
+                System.getProperty("user.dir") + "\\" + "test.txt"));
+        PrintWriter output = new PrintWriter("34768020.txt");
         String[] strarray;
 
-        while(true)
+        while(input.hasNext())
         {
-            strarray = keyboard.nextLine().split(" ");
+            strarray = input.nextLine().split(" ");
 
             switch(strarray[0])
             {
                 case "cr": // Create new file with specified name
-                    sys.create(strarray[1]); // Add length checking !!!
+                    int test = sys.create(strarray[1]);
+                    if (test == -1)
+                        output.println("error");
+                    else
+                        output.println(strarray[1] + " created");
                     break;
+
                 case "de": // Destroy file with given name
-                    sys.destroy(strarray[1]);
+                    int check = sys.destroy(strarray[1]);
+                    if (check == -1)
+                        output.println("error");
+                    else
+                        output.println(strarray[1] + " destroyed");
                     break;
+
                 case "op": // Opens specified file
                     int status = sys.open(strarray[1]);
                     if (status == -1)
-                        System.out.println("error");
+                        output.println("error");
                     else
-                        System.out.println(strarray[1] + " opened " + status);
+                        output.println(strarray[1] + " opened " + status);
                     break;
+
                 case "cl": // Closes specified file
                     int index = Integer.parseInt(strarray[1]);
                     if (index <= 0 || index > 3)
-                        System.out.println("error");
+                        output.println("error");
                     else
                     {
                         index = sys.close(Integer.parseInt(strarray[1]));
-                        System.out.println(index + ". closed");
+                        output.println(index + ". closed");
                     }
                     break;
+
                 case "rd": // Reads given number of characters from spec. file
                     if (Integer.parseInt(strarray[1]) == 0)
-                        System.out.println("error"); // prevent user from access dir
+                        output.println("error"); // prevent user from access dir
                     else
                     {
                         String str = sys.read(Integer.parseInt(strarray[1]),
                                 Integer.parseInt(strarray[2]));
-                        System.out.println(str.substring(1));
+                        output.println(str.substring(1));
                     }
                     break;
+
                 case "wr": // Sequentially writes number of spec. char to spec. file
                     if (Integer.parseInt(strarray[1]) == 0)
-                        System.out.println("error"); // prevent user dir access
+                        output.println("error"); // prevent user dir access
                     else
                     {
                         int num = sys.write(Integer.parseInt(strarray[1]),
                                 strarray[2].charAt(0),
                                 Integer.parseInt(strarray[3]));
-                        System.out.println(num + " bytes written");
+                        if (num == -1)
+                            output.println("error");
+                        else
+                            output.println(num + " bytes written");
                     }
                     break;
+
                 case "sk": // Seek specified position in spec. file
                     int pos = sys.lseek(Integer.parseInt(strarray[1]),
                             Integer.parseInt(strarray[2]));
-                    System.out.println("position is " + pos);
+                    if (pos == -1)
+                        output.println("error");
+                    else
+                        output.println("position is " + pos);
                     break;
+
                 case "dr": // List the names of all files
-                    sys.directory();
+                    output.println(sys.directory());
                     break;
+
                 case "in": // Create disk, initialize it, and open directory
-                    sys.init(strarray[1]);
+                    int result;
+                    if (strarray.length == 1)
+                        result = sys.init();
+                    else
+                        result = sys.init(strarray[1]);
+                    if (result == 0)
+                        output.println("disk initialized");
+                    else if (result == 1)
+                        output.println("disk restored");
+                    else
+                        output.println("error");
                     break;
+
                 case "sv": // Save ldisk to specified file
-                    sys.save(strarray[1]);
+                    int saved = sys.save(strarray[1]);
+                    if (saved == -1)
+                        output.println("error");
+                    else
+                        output.println("disk saved");
                     break;
-                case "ex": // Exit program
-                    System.out.println("Now exiting program...");
-                    return;
+
                 default:
-                    System.out.println("");
+                    output.println();
                     break;
             }
 
         }
+        input.close();
+        output.close();
     }
 }

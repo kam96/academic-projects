@@ -1,7 +1,7 @@
 //This class contains implementations of methods to
 //   -- pack an integer into 4 consecutive bytes of a byte array
 //   -- unpack an integer from 4 consecutive bytes of a byte array
-//   -- exhaustively test the pack and unpack methods.
+//   -- exhaustively test.txt the pack and unpack methods.
 //
 // This file should be saved as PackableMemory.java.  Once it has been
 //  compiled, the tester can be invoked by typing "java PackableMemory"
@@ -74,7 +74,7 @@ public class PackableMemory
         System.out.printf("pack/unpack test successful, %d iterations\n",k);
     }
 
-    // main routine to test the PackableMemory class by running the
+    // main routine to test.txt the PackableMemory class by running the
     //  packTest() method.
     public static void main(String[] args)
     {

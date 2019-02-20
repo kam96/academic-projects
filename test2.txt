@@ -1,0 +1,16 @@
+in
+cr foo
+cr bar
+cr lor
+cr pax
+op foo
+op bar
+op lor
+wr 1 x 15
+wr 2 y 17
+wr 3 o 55
+cl 3
+cl 2
+op foo
+de pax
+sv disk0.txt
